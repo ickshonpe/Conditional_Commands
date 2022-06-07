@@ -1,23 +1,55 @@
 # Conditional Commands
 
-Provides an extension trait ```ConditionalEntityCommandsExt``` on Bevy ```EntityCommands```.
+Implements three extension traits 
+* ```ConditionalInsertComponentsExt``` for ```EntityCommands``` and ```EntityMut```\
+    with methods:
+    - ```insert_if```
+    - ```insert_if_else```
+    - ```insert_bundle_if```
+    - ```insert_bundle_if_else```
+* ```ConditionalChildBuilderExt``` for ```EntityCommands```\
+    with method:
+    - ```with_children_if```
+* ```ConditionalWorldChildBuilderExt``` for ```EntityMut```\
+    with method:
+    - ```with_children_if```
 
- It adds three new methods:
-
-* ```insert_if```
-* ```insert_bundle_if```
-* ```with_children_if```
-
-that allow for conditional component, bundle, and child insertion without the need for an intermediate ```EntityCommands``` binding.
-
+that allow for conditional component, bundle, and child insertion without the need for an intermediate ```EntityCommands``` or ```EntityMut``` binding.
 * Supports Bevy 0.7
+
 #
+## New for Version 0.2
+
+* Implementated traits for ```EntityMut```.
+
+* ```*_if_else``` methods.
+
+## Example
+```rust
+use conditional_commands::*;
+
+#[derive(Component)]
+struct Even;
+
+#[derive(Component)]
+struct Odd;
+
+fn exclusive_system(world: &mut World) {
+    for n in 0..10 {
+        world.spawn()
+        .insert_if_else(n % 2 == 0, Even, Odd);
+    }
+}
+```
+
+#
+
 ## Usage
 
 Add to your Cargo.toml ```[Dependencies]``` section
 
 ```
-conditional_commands = "0.1"
+conditional_commands = "0.2"
 ```
 
 Then access with the ```use``` declaration
@@ -27,7 +59,7 @@ use conditional_commands::*;
 ```
 #
 
-## Contrived ECS Fizz-Buzz Example
+## Motivating Contrived ECS Fizz-Buzz Example
 
 ```rust
 use bevy::prelude::*;

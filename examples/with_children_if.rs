@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use conditional_commands::ConditionalEntityCommandsExt;
+use conditional_commands::*;
 
 #[derive(Component)]
 struct A;
