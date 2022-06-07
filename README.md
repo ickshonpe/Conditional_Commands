@@ -7,6 +7,8 @@ Implements three extension traits
     - ```insert_if_else```
     - ```insert_bundle_if```
     - ```insert_bundle_if_else```
+    - ```insert_some```
+    - ```insert_bundle_some```
 * ```ConditionalChildBuilderExt``` for ```EntityCommands```\
     with method:
     - ```with_children_if```
@@ -16,31 +18,32 @@ Implements three extension traits
 
 that allow for conditional component, bundle, and child insertion without the need for an intermediate ```EntityCommands``` or ```EntityMut``` binding.
 * Supports Bevy 0.7
-
 #
-## New for Version 0.2
+## New for Version 0.3
+* ```insert_some``` methods. If present, insert the inner value of an ```Option```.
+
+## Version 0.2
 
 * Implementated traits for ```EntityMut```.
 
 * ```*_if_else``` methods.
 
-## Example
-```rust
-use conditional_commands::*;
+    ```rust
+    use conditional_commands::*;
 
-#[derive(Component)]
-struct Even;
+    #[derive(Component)]
+    struct Even;
 
-#[derive(Component)]
-struct Odd;
+    #[derive(Component)]
+    struct Odd;
 
-fn exclusive_system(world: &mut World) {
-    for n in 0..10 {
-        world.spawn()
-        .insert_if_else(n % 2 == 0, Even, Odd);
+    fn exclusive_system(world: &mut World) {
+        for n in 0..10 {
+            world.spawn()
+            .insert_if_else(n % 2 == 0, Even, Odd);
+        }
     }
-}
-```
+    ```
 
 #
 

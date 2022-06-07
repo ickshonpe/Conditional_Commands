@@ -28,6 +28,16 @@ pub trait ConditionalInsertComponentsExt {
         bundle: A,
         else_bundle: B,
     ) -> &mut Self;
+
+    fn insert_some<C: Component>(
+        &mut self,
+        optional_component: Option<C>
+    ) -> &mut Self;
+
+    fn insert_bundle_some<B: Bundle>(
+        &mut self,
+        optional_bundle: Option<B>
+    ) -> &mut Self;
 }
 
 // Couldn't quite finesse the lifetimes etc to get a single generic child builder trait
@@ -105,6 +115,28 @@ impl ConditionalInsertComponentsExt for EntityCommands<'_, '_, '_> {
         } 
     }
 
+    /// If present, insert the inner value of `optional_component`
+    fn insert_some<C: Component>(
+        &mut self,
+        optional_component: Option<C>
+    ) -> &mut Self {        
+        if let Some(component) = optional_component {
+            self.insert(component);
+        }
+        self
+    }
+
+    /// If present, insert the inner value of `optional_bundle`
+    fn insert_bundle_some<B: Bundle>(
+        &mut self,
+        optional_bundle: Option<B>
+    ) -> &mut Self {
+        if let Some(bundle) = optional_bundle {
+            self.insert_bundle(bundle);
+        }
+        self
+    }
+
     
 }
 
@@ -177,7 +209,27 @@ impl ConditionalInsertComponentsExt for EntityMut<'_> {
         } 
     }
 
-    
+    /// If present, insert the inner value of `optional_component`
+    fn insert_some<C: Component>(
+        &mut self,
+        optional_component: Option<C>
+    ) -> &mut Self {
+        if let Some(component) = optional_component {
+            self.insert(component);
+        }
+        self
+    }
+
+    /// If present, insert the inner value of `optional_bundle`
+    fn insert_bundle_some<B: Bundle>(
+        &mut self,
+        optional_bundle: Option<B>
+    ) -> &mut Self {
+        if let Some(bundle) = optional_bundle {
+            self.insert_bundle(bundle);
+        }
+        self
+    }
 }
 
 impl ConditionalWorldChildBuilderExt for EntityMut<'_> {
