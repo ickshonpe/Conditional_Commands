@@ -8,7 +8,9 @@ Implements three extension traits
     - ```insert_bundle_if```
     - ```insert_bundle_if_else```
     - ```insert_some```
+    - ```insert_some_or_else```
     - ```insert_bundle_some```
+    - ```insert_bundle_some_or_else```
 * ```ConditionalChildBuilderExt``` for ```EntityCommands```\
     with method:
     - ```with_children_if```
@@ -19,6 +21,9 @@ Implements three extension traits
 that allow for conditional component, bundle, and child insertion without the need for an intermediate ```EntityCommands``` or ```EntityMut``` binding.
 * Supports Bevy 0.7
 #
+## Version 0.4
+* ```insert_some_or_else``` methods. If present, insert the inner value of an ```Option```, otherwise insert the alternative value
+
 ## New for Version 0.3
 * ```insert_some``` methods. If present, insert the inner value of an ```Option```.
 

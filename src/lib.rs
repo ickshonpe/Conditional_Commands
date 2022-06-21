@@ -34,9 +34,21 @@ pub trait ConditionalInsertComponentsExt {
         optional_component: Option<C>
     ) -> &mut Self;
 
+    fn insert_some_or_else<C: Component, D: Component>(
+        &mut self,
+        optional_component: Option<C>,
+        otherwise: impl FnOnce() -> D
+    ) -> &mut Self;
+
     fn insert_bundle_some<B: Bundle>(
         &mut self,
         optional_bundle: Option<B>
+    ) -> &mut Self;
+
+    fn insert_bundle_some_or_else<B: Bundle, A: Bundle>(
+        &mut self,
+        optional_bundle: Option<B>,
+        otherwise: impl FnOnce() -> A
     ) -> &mut Self;
 }
 
@@ -126,6 +138,21 @@ impl ConditionalInsertComponentsExt for EntityCommands<'_, '_, '_> {
         self
     }
 
+     /// If present, insert the inner value of `optional_component`
+     /// otherwise insert the component returned by otherwise
+     fn insert_some_or_else<C: Component, D: Component>(
+        &mut self,
+        optional_component: Option<C>,
+        otherwise: impl FnOnce() -> D,
+    ) -> &mut Self {        
+        if let Some(component) = optional_component {
+            self.insert(component);
+        } else {
+            self.insert((otherwise)());
+        }
+        self
+    }
+
     /// If present, insert the inner value of `optional_bundle`
     fn insert_bundle_some<B: Bundle>(
         &mut self,
@@ -137,7 +164,20 @@ impl ConditionalInsertComponentsExt for EntityCommands<'_, '_, '_> {
         self
     }
 
-    
+    /// If present, insert the inner value of `optional_bundle`
+    /// otherwise insert the component returned by otherwise
+    fn insert_bundle_some_or_else<B: Bundle, A: Bundle>(
+        &mut self,
+        optional_bundle: Option<B>,
+        otherwise: impl FnOnce() -> A
+    ) -> &mut Self {
+        if let Some(bundle) = optional_bundle {
+            self.insert_bundle(bundle);
+        } else {
+            self.insert_bundle((otherwise)());
+        }
+        self
+    }
 }
 
 impl ConditionalChildBuilderExt for EntityCommands<'_, '_, '_> {
@@ -220,6 +260,21 @@ impl ConditionalInsertComponentsExt for EntityMut<'_> {
         self
     }
 
+    /// If present, insert the inner value of `optional_component`
+    /// otherwise insert the component returned by otherwise
+    fn insert_some_or_else<C: Component, D: Component>(
+        &mut self,
+        optional_component: Option<C>,
+        otherwise: impl FnOnce() -> D,
+    ) -> &mut Self {        
+        if let Some(component) = optional_component {
+            self.insert(component);
+        } else {
+            self.insert((otherwise)());
+        }
+        self
+    }
+
     /// If present, insert the inner value of `optional_bundle`
     fn insert_bundle_some<B: Bundle>(
         &mut self,
@@ -227,6 +282,21 @@ impl ConditionalInsertComponentsExt for EntityMut<'_> {
     ) -> &mut Self {
         if let Some(bundle) = optional_bundle {
             self.insert_bundle(bundle);
+        }
+        self
+    }
+
+    /// If present, insert the inner value of `optional_bundle`
+    /// otherwise insert the component returned by otherwise
+    fn insert_bundle_some_or_else<B: Bundle, A: Bundle>(
+        &mut self,
+        optional_bundle: Option<B>,
+        otherwise: impl FnOnce() -> A
+    ) -> &mut Self {
+        if let Some(bundle) = optional_bundle {
+            self.insert_bundle(bundle);
+        } else {
+            self.insert_bundle((otherwise)());
         }
         self
     }
