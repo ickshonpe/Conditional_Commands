@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use conditional_commands::ConditionalInsertComponentsExt;
 
-
 #[derive(Component)]
 struct Number(usize);
 
@@ -11,15 +10,13 @@ struct Fizz;
 #[derive(Component)]
 struct Buzz;
 
-fn fizz_buzz<const N: usize>(
-    mut commands: Commands
-) {
-    for n in 1 ..= N {
+fn fizz_buzz<const N: usize>(mut commands: Commands) {
+    for n in 1..=N {
         commands
-        .spawn()
-        .insert_if(0 < n % 3 && 0 < n % 5, Number(n))
-        .insert_if(n % 3 == 0, Fizz)
-        .insert_if(n % 5 == 0, Buzz);
+            .spawn()
+            .insert_if(0 < n % 3 && 0 < n % 5, Number(n))
+            .insert_if(n % 3 == 0, Fizz)
+            .insert_if(n % 5 == 0, Buzz);
     }
 }
 
@@ -39,7 +36,7 @@ fn report(
 
 fn main() {
     App::new()
-    .add_startup_system(fizz_buzz::<30>)
-    .add_system(report)
-    .run();
+        .add_startup_system(fizz_buzz::<30>)
+        .add_system(report)
+        .run();
 }

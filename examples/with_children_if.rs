@@ -7,33 +7,25 @@ struct A;
 #[derive(Component)]
 struct B;
 
-fn spawn_entities(
-    mut commands: Commands,
-) {
-    for i in 0..10 { 
+fn spawn_entities(mut commands: Commands) {
+    for i in 0..10 {
         commands
-        .spawn()
-        .insert(A)
-        .with_children_if(i % 2 == 0, |child_builder| {
-            child_builder.spawn().insert(B); 
-        });
+            .spawn()
+            .insert(A)
+            .with_children_if(i % 2 == 0, |child_builder| {
+                child_builder.spawn().insert(B);
+            });
     }
 }
 
-fn report(
-    a_query: Query<&A>,
-    b_query: Query<&B>,
-) {
+fn report(a_query: Query<&A>, b_query: Query<&B>) {
     println!("{} entities with component A.", a_query.iter().count());
     println!("{} entities with component B.", b_query.iter().count());
 }
 
 fn main() {
     App::new()
-    .add_startup_system(spawn_entities)
-    .add_system(report)
-    .run();
-
-
-    
+        .add_startup_system(spawn_entities)
+        .add_system(report)
+        .run();
 }
