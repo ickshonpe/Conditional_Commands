@@ -12,8 +12,10 @@ Implements three extension traits
     - ```insert_bundle_if_else```
     - ```insert_bundle_if_else_lazy```
     - ```insert_some```
+    - ```insert_some_or```
     - ```insert_some_or_else```
     - ```insert_bundle_some```
+    - ```insert_bunlde_some_or```
     - ```insert_bundle_some_or_else```
 * ```ConditionalChildBuilderExt``` for ```EntityCommands```\
     with method:
@@ -23,6 +25,9 @@ Implements three extension traits
     - ```with_children_if```
 
 that allow for conditional component, bundle, and child insertion without the need for an intermediate ```EntityCommands``` or ```EntityMut``` binding.
+
+The ```if_else``` methods are generic on both arguments, there is no requirement for the components or bundles to be of the same type.
+
 * Supports Bevy 0.7
 
 #
@@ -119,6 +124,16 @@ fn fizz_buzz<const N: usize>(
         .insert_if(n % 5 == 0, Buzz);
     }
 }
+```
+## Other Examples
+
+```
+cargo run --example exclusize
+cargo run --example fizz_buzz
+cargo run --example insert_if
+cargo run --example lazy
+cargo run --example with_children_if
+
 ```
 #
 ## Notes
