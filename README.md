@@ -4,9 +4,13 @@ Implements three extension traits
 * ```ConditionalInsertComponentsExt``` for ```EntityCommands``` and ```EntityMut```\
     with methods:
     - ```insert_if```
+    - ```insert_if_lazy```
     - ```insert_if_else```
+    - ```insert_if_else_lazy```
     - ```insert_bundle_if```
+    - ```insert_bundle_if_lazy```
     - ```insert_bundle_if_else```
+    - ```insert_bundle_if_else_lazy```
     - ```insert_some```
     - ```insert_some_or_else```
     - ```insert_bundle_some```
@@ -20,7 +24,11 @@ Implements three extension traits
 
 that allow for conditional component, bundle, and child insertion without the need for an intermediate ```EntityCommands``` or ```EntityMut``` binding.
 * Supports Bevy 0.7
+
 #
+## Version 0.5
+* Lazy equivalents for insertion methods. 
+
 ## Version 0.4
 * ```insert_some_or_else``` methods. If present, insert the inner value of an ```Option```, otherwise insert the alternative value
 
@@ -57,7 +65,7 @@ that allow for conditional component, bundle, and child insertion without the ne
 Add to your Cargo.toml ```[Dependencies]``` section
 
 ```
-conditional_commands = "0.2"
+conditional_commands = "0.5"
 ```
 
 Then access with the ```use``` declaration
@@ -112,4 +120,17 @@ fn fizz_buzz<const N: usize>(
     }
 }
 ```
+#
+## Notes
+
+Some ergonomic compromises I had to make:
+
+* Wasn't able to quite finesse the lifetimes to get a single generic child builder trait for both ```EntityCommands``` and ```EntityMut```.
+* I wanted a generic API with methods that can accept both a ```Component``` or an ```Fn() -> Component```. That doesn't seem possible because Rust doesn't have negative trait bound. So I have an explosion of if_else / if_else lazy methods that isn't very satisfying. 
+
+Any solutions for either issue would be very welcome.
+
+Considering seperating the lazy methods into a seperate trait or feature gating them.
+
+Also not happy with the naming of the methods. 
 
