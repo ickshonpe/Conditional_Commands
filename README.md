@@ -15,7 +15,7 @@ Implements three extension traits
     - ```insert_some_or```
     - ```insert_some_or_else```
     - ```insert_bundle_some```
-    - ```insert_bunlde_some_or```
+    - ```insert_bundle_some_or```
     - ```insert_bundle_some_or_else```
 * ```ConditionalChildBuilderExt``` for ```EntityCommands```\
     with method:
@@ -28,7 +28,8 @@ that allow for conditional component, bundle, and child insertion without the ne
 
 The ```if_else``` methods are generic on both arguments, there is no requirement for the components or bundles to be of the same type.
 
-* Supports Bevy 0.7
+* version 0.6 supports Bevy 0.8
+* versions <0.6 support Bevy 0.7
 
 #
 ## Version 0.5

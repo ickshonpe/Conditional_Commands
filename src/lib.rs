@@ -8,7 +8,7 @@ pub trait ConditionalInsertComponentsExt {
     fn insert_if_lazy<C: Component>(
         &mut self,
         condition: bool,
-        component: impl Fn() -> C,
+        component: impl FnOnce() -> C,
     ) -> &mut Self;
 
     fn insert_if_else<C: Component, D: Component>(
@@ -23,7 +23,7 @@ pub trait ConditionalInsertComponentsExt {
     fn insert_bundle_if_lazy<B: Bundle>(
         &mut self,
         condition: bool,
-        bundle: impl Fn() -> B,
+        bundle: impl FnOnce() -> B,
     ) -> &mut Self;
 
     fn insert_bundle_if_else<A: Bundle, B: Bundle>(
@@ -36,8 +36,8 @@ pub trait ConditionalInsertComponentsExt {
     fn insert_bundle_if_else_lazy<A: Bundle, B: Bundle>(
         &mut self,
         condition: bool,
-        bundle: impl Fn() -> A,
-        else_bundle: impl Fn() -> B,
+        bundle: impl FnOnce() -> A,
+        else_bundle: impl FnOnce() -> B,
     ) -> &mut Self;
 
     fn insert_some<C: Component>(&mut self, optional_component: Option<C>) -> &mut Self;
@@ -184,7 +184,7 @@ macro_rules! ImplExt {
             fn insert_if_lazy<C: Component>(
                 &mut self,
                 condition: bool,
-                component_fn: impl Fn() -> C,
+                component_fn: impl FnOnce() -> C,
             ) -> &mut Self {
                 if condition {
                     self.insert((component_fn)());
@@ -196,7 +196,7 @@ macro_rules! ImplExt {
             fn insert_bundle_if_lazy<B: Bundle>(
                 &mut self,
                 condition: bool,
-                bundle_fn: impl Fn() -> B,
+                bundle_fn: impl FnOnce() -> B,
             ) -> &mut Self {
                 if condition {
                     self.insert_bundle((bundle_fn)());
@@ -209,8 +209,8 @@ macro_rules! ImplExt {
             fn insert_bundle_if_else_lazy<A: Bundle, B: Bundle>(
                 &mut self,
                 condition: bool,
-                bundle_fn: impl Fn() -> A,
-                else_bundle_fn: impl Fn() -> B,
+                bundle_fn: impl FnOnce() -> A,
+                else_bundle_fn: impl FnOnce() -> B,
             ) -> &mut Self {
                 if condition {
                     self.insert_bundle((bundle_fn)());
