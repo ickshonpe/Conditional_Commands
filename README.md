@@ -32,6 +32,11 @@ The ```if_else``` methods are generic on both arguments, there is no requirement
 * versions <0.6 support Bevy 0.7
 
 #
+
+## Version 0.6
+
+* Bevy 0.8 support
+
 ## Version 0.5
 * Lazy equivalents for insertion methods. 
 
@@ -71,7 +76,7 @@ The ```if_else``` methods are generic on both arguments, there is no requirement
 Add to your Cargo.toml ```[Dependencies]``` section
 
 ```
-conditional_commands = "0.5"
+conditional_commands = "0.6"
 ```
 
 Then access with the ```use``` declaration
