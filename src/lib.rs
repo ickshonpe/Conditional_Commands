@@ -2,67 +2,19 @@ use bevy::ecs::system::EntityCommands;
 use bevy::ecs::world::EntityMut;
 use bevy::prelude::*;
 
-pub trait ConditionalInsertComponentsExt {
-    fn insert_if<C: Component>(&mut self, condition: bool, component: C) -> &mut Self;
+pub trait ConditionalInsertBundleExt {
+    fn insert_if<B: Bundle>(&mut self, condition: bool, bundle: impl FnOnce() -> B) -> &mut Self;
 
-    fn insert_if_lazy<C: Component>(
-        &mut self,
-        condition: bool,
-        component: impl FnOnce() -> C,
-    ) -> &mut Self;
-
-    fn insert_if_else<C: Component, D: Component>(
-        &mut self,
-        condition: bool,
-        component: C,
-        else_component: D,
-    ) -> &mut Self;
-
-    fn insert_bundle_if<B: Bundle>(&mut self, condition: bool, bundle: B) -> &mut Self;
-
-    fn insert_bundle_if_lazy<B: Bundle>(
-        &mut self,
-        condition: bool,
-        bundle: impl FnOnce() -> B,
-    ) -> &mut Self;
-
-    fn insert_bundle_if_else<A: Bundle, B: Bundle>(
-        &mut self,
-        condition: bool,
-        bundle: A,
-        else_bundle: B,
-    ) -> &mut Self;
-
-    fn insert_bundle_if_else_lazy<A: Bundle, B: Bundle>(
+    fn insert_if_else<A: Bundle, B: Bundle>(
         &mut self,
         condition: bool,
         bundle: impl FnOnce() -> A,
         else_bundle: impl FnOnce() -> B,
     ) -> &mut Self;
 
-    fn insert_some<C: Component>(&mut self, optional_component: Option<C>) -> &mut Self;
+    fn insert_some<B: Bundle>(&mut self, optional_bundle: Option<B>) -> &mut Self;
 
-    fn insert_some_or<C: Component, D: Component>(
-        &mut self,
-        optional_component: Option<C>,
-        otherwise: D,
-    ) -> &mut Self;
-
-    fn insert_some_or_else<C: Component, D: Component>(
-        &mut self,
-        optional_component: Option<C>,
-        otherwise: impl FnOnce() -> D,
-    ) -> &mut Self;
-
-    fn insert_bundle_some<B: Bundle>(&mut self, optional_bundle: Option<B>) -> &mut Self;
-
-    fn insert_bundle_some_or<A: Bundle, B: Bundle>(
-        &mut self,
-        optional_bundle: Option<A>,
-        else_bundle: B,
-    ) -> &mut Self;
-
-    fn insert_bundle_some_or_else<A: Bundle, B: Bundle>(
+    fn insert_some_or<A: Bundle, B: Bundle>(
         &mut self,
         optional_bundle: Option<A>,
         otherwise: impl FnOnce() -> B,
@@ -87,165 +39,53 @@ pub trait ConditionalWorldChildBuilderExt {
 
 macro_rules! ImplExt {
     ($t:ty) => {
-        impl ConditionalInsertComponentsExt for $t {
-            /// if `condition`, add a [`Component`] to the entity
-            fn insert_if<C: Component>(&mut self, condition: bool, component: C) -> &mut Self {
-                if condition {
-                    self.insert(component);
-                }
-                self
-            }
-
+        impl ConditionalInsertBundleExt for $t {
             /// if `condition`, add a [`Bundle`] to the entity
-            fn insert_bundle_if<B: Bundle>(&mut self, condition: bool, bundle: B) -> &mut Self {
-                if condition {
-                    self.insert_bundle(bundle);
-                }
-                self
-            }
-
-            /// if `condition`, add a [`Component`] to the entity
-            /// else add other [`Component`] to the entity
-            fn insert_if_else<C: Component, D: Component>(
+            fn insert_if<C: Bundle>(
                 &mut self,
                 condition: bool,
-                component: C,
-                else_component: D,
+                bundle: impl FnOnce() -> C,
             ) -> &mut Self {
                 if condition {
-                    self.insert(component)
-                } else {
-                    self.insert(else_component)
+                    self.insert(bundle());
                 }
+                self
             }
 
             /// if `condition`, add a [`Bundle`] to the entity
             /// else add other [`Bundle`] to the entity
-            fn insert_bundle_if_else<A: Bundle, B: Bundle>(
+            fn insert_if_else<C: Bundle, D: Bundle>(
                 &mut self,
                 condition: bool,
-                bundle: A,
-                else_bundle: B,
+                bundle: impl FnOnce() -> C,
+                else_bundle: impl FnOnce() -> D,
             ) -> &mut Self {
                 if condition {
-                    self.insert_bundle(bundle)
+                    self.insert(bundle())
                 } else {
-                    self.insert_bundle(else_bundle)
+                    self.insert(else_bundle())
                 }
             }
 
-            /// If present, insert the inner value of `optional_component`
-            fn insert_some<C: Component>(&mut self, optional_component: Option<C>) -> &mut Self {
-                if let Some(component) = optional_component {
-                    self.insert(component);
-                }
-                self
-            }
-
-            /// If present, insert the inner value of `optional_component`
-            /// otherwise insert the component returned by otherwise
-            fn insert_some_or_else<C: Component, D: Component>(
+            /// If present, insert the inner value of `optional_Bundle`
+            /// otherwise insert the Bundle returned by otherwise
+            fn insert_some_or<C: Bundle, D: Bundle>(
                 &mut self,
-                optional_component: Option<C>,
+                optional_bundle: Option<C>,
                 otherwise: impl FnOnce() -> D,
             ) -> &mut Self {
-                if let Some(component) = optional_component {
-                    self.insert(component);
+                if let Some(bundle) = optional_bundle {
+                    self.insert(bundle);
                 } else {
-                    self.insert((otherwise)());
+                    self.insert(otherwise());
                 }
                 self
             }
 
             /// If present, insert the inner value of `optional_bundle`
-            fn insert_bundle_some<B: Bundle>(&mut self, optional_bundle: Option<B>) -> &mut Self {
+            fn insert_some<B: Bundle>(&mut self, optional_bundle: Option<B>) -> &mut Self {
                 if let Some(bundle) = optional_bundle {
-                    self.insert_bundle(bundle);
-                }
-                self
-            }
-
-            /// If present, insert the inner value of `optional_bundle`
-            /// otherwise insert the component returned by otherwise
-            fn insert_bundle_some_or_else<B: Bundle, A: Bundle>(
-                &mut self,
-                optional_bundle: Option<B>,
-                otherwise: impl FnOnce() -> A,
-            ) -> &mut Self {
-                if let Some(bundle) = optional_bundle {
-                    self.insert_bundle(bundle);
-                } else {
-                    self.insert_bundle((otherwise)());
-                }
-                self
-            }
-
-            /// If condition, compute a component from a closure and insert it
-            fn insert_if_lazy<C: Component>(
-                &mut self,
-                condition: bool,
-                component_fn: impl FnOnce() -> C,
-            ) -> &mut Self {
-                if condition {
-                    self.insert((component_fn)());
-                }
-                self
-            }
-
-            /// If condition, compute a bundle from a closure and insert it
-            fn insert_bundle_if_lazy<B: Bundle>(
-                &mut self,
-                condition: bool,
-                bundle_fn: impl FnOnce() -> B,
-            ) -> &mut Self {
-                if condition {
-                    self.insert_bundle((bundle_fn)());
-                }
-                self
-            }
-
-            /// If condition, compute a component from bundle_fn and insert it
-            /// otherwise compute a bundle from else_bundle_fn and insert it
-            fn insert_bundle_if_else_lazy<A: Bundle, B: Bundle>(
-                &mut self,
-                condition: bool,
-                bundle_fn: impl FnOnce() -> A,
-                else_bundle_fn: impl FnOnce() -> B,
-            ) -> &mut Self {
-                if condition {
-                    self.insert_bundle((bundle_fn)());
-                } else {
-                    self.insert_bundle((else_bundle_fn)());
-                }
-                self
-            }
-
-            /// Insert inner value of optional_component
-            /// or if none, insert otherwise
-            fn insert_some_or<C: Component, D: Component>(
-                &mut self,
-                optional_component: Option<C>,
-                otherwise: D,
-            ) -> &mut Self {
-                if let Some(component) = optional_component {
-                    self.insert(component);
-                } else {
-                    self.insert(otherwise);
-                }
-                self
-            }
-
-            /// Insert inner value of optional_bundle
-            /// or if none, insert otherwise
-            fn insert_bundle_some_or<A: Bundle, B: Bundle>(
-                &mut self,
-                optional_bundle: Option<A>,
-                otherwise: B,
-            ) -> &mut Self {
-                if let Some(bundle) = optional_bundle {
-                    self.insert_bundle(bundle);
-                } else {
-                    self.insert_bundle(otherwise);
+                    self.insert(bundle);
                 }
                 self
             }
@@ -281,5 +121,45 @@ impl ConditionalWorldChildBuilderExt for EntityMut<'_> {
             self.with_children(child_builder);
         }
         self
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn some() {
+        #[derive(Component)]
+        struct MyComponent;
+
+        #[derive(Component, Default)]
+        struct OtherComponent;
+
+        #[derive(Component)]
+        struct MyThing;
+
+        #[derive(Component, Default)]
+        struct AlternativeThing;
+
+        fn spawn_entities(mut commands: Commands) {
+            commands
+                .spawn(MyComponent)
+                .insert_some(Some(OtherComponent::default()))
+                .insert_some_or(None::<MyThing>, AlternativeThing::default);
+        }
+
+        let mut app = App::new();
+        app.add_startup_system(spawn_entities);
+        app.update();
+        let world = &mut app.world;
+        let mut query = world.query_filtered::<Entity, (
+            With<MyComponent>,
+            With<OtherComponent>,
+            Without<MyThing>,
+            With<AlternativeThing>,
+        )>();
+        assert!(query.iter(&world).count() == 1);
     }
 }

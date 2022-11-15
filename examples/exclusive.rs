@@ -9,7 +9,9 @@ struct Odd;
 
 fn exclusive_system(world: &mut World) {
     for n in 0..10 {
-        world.spawn().insert_if_else(n % 2 == 0, Even, Odd);
+        world
+            .spawn_empty()
+            .insert_if_else(n % 2 == 0, || Even, || Odd);
     }
 }
 
@@ -26,7 +28,7 @@ fn count_components(evens_query: Query<With<Even>>, odds_query: Query<With<Odd>>
 
 fn main() {
     App::new()
-        .add_startup_system(exclusive_system.exclusive_system())
+        .add_startup_system(exclusive_system)
         .add_system(count_components)
         .run();
 }

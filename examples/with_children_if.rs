@@ -10,10 +10,10 @@ struct B;
 fn spawn_entities(mut commands: Commands) {
     for i in 0..10 {
         commands
-            .spawn()
+            .spawn_empty()
             .insert(A)
             .with_children_if(i % 2 == 0, |child_builder| {
-                child_builder.spawn().insert(B);
+                child_builder.spawn(B);
             });
     }
 }

@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use conditional_commands::ConditionalInsertComponentsExt;
+use conditional_commands::ConditionalInsertBundleExt;
 
 #[derive(Component)]
 struct A;
@@ -9,7 +9,7 @@ struct B;
 
 fn spawn_entities(mut commands: Commands) {
     for i in 0..10 {
-        commands.spawn().insert(A).insert_if(i < 3, B);
+        commands.spawn_empty().insert(A).insert_if(i < 3, || B);
     }
 }
 

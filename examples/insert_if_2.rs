@@ -5,11 +5,11 @@ use conditional_commands::*;
 struct Name(String);
 
 fn lazy(mut commands: Commands) {
-    commands.spawn().insert_if_lazy(true, || {
+    commands.spawn_empty().insert_if(true, || {
         println!("condition = true, so this closure is computed and inserts a Name component.");
         Name("Ben".to_string())
     });
-    commands.spawn().insert_if_lazy(false, || {
+    commands.spawn_empty().insert_if(false, || {
         println!(
             "condition = false, so this closure is not computed, 
                         the Name component is not inserted 

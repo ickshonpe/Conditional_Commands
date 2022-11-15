@@ -1,5 +1,8 @@
 use bevy::prelude::*;
-use conditional_commands::ConditionalInsertComponentsExt;
+use conditional_commands::ConditionalInsertBundleExt;
+
+#[derive(Component)]
+struct FizzBuzzer;
 
 #[derive(Component)]
 struct Number(usize);
@@ -13,10 +16,10 @@ struct Buzz;
 fn fizz_buzz<const N: usize>(mut commands: Commands) {
     for n in 1..=N {
         commands
-            .spawn()
-            .insert_if(0 < n % 3 && 0 < n % 5, Number(n))
-            .insert_if(n % 3 == 0, Fizz)
-            .insert_if(n % 5 == 0, Buzz);
+            .spawn(FizzBuzzer)
+            .insert_if(0 < n % 3 && 0 < n % 5, || Number(n))
+            .insert_if(n % 3 == 0, || Fizz)
+            .insert_if(n % 5 == 0, || Buzz);
     }
 }
 
